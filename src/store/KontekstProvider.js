@@ -55,6 +55,10 @@ const ReducerFunkcija = (state, action) => {
       }
   }
 
+  if (action.type === "OCISTI") {
+    return InicijalnoStanje
+  }
+
   return InicijalnoStanje
 };
 
@@ -69,11 +73,16 @@ const KontekstProvider = (props) => {
     dispatch({ type: "MAKNI", id: id });
   };
 
+  const ocistiKartu = () => {
+    dispatch({ type: "OCISTI" })
+  }
+
   const kontekstVrijednost = {
     items: treStanje.items,
     totalAmount: treStanje.totalAmount,
     addItem: dodajArtikal,
     removeItem: makniArtikal,
+    clearKartu:  ocistiKartu,
   };
 
   return (

@@ -10,7 +10,6 @@ const MealItemForm = (props) => {
 
     const upisanaKolichina = kolichinaInputaRef.current.value;
     const upisanaKolichinaBroj = +upisanaKolichina;
-    console.log(upisanaKolichinaBroj);
 
     if (
       upisanaKolichina.trim().lenght === 0 ||

@@ -1,49 +1,75 @@
-import react from "react";
+import react, { useEffect, useState } from "react";
 import MealItem from "./MealItems/MealItem.js";
-import stilovi from "./AvailableMeals.js";
+import stilovi from "./AvailableMeals.module.css";
 import Card from "../UI/Card.js";
 
-const DUMMY_MEALS = [
-  {
-    id: "m1",
-    name: "Sushi",
-    description: "Finest fish and veggies",
-    price: 22.99,
-  },
-  {
-    id: "m2",
-    name: "Schnitzel",
-    description: "A german specialty!",
-    price: 16.5,
-  },
-  {
-    id: "m3",
-    name: "Barbecue Burger",
-    description: "American, raw, meaty",
-    price: 12.99,
-  },
-  {
-    id: "m4",
-    name: "Green Bowl",
-    description: "Healthy...and green...",
-    price: 18.99,
-  },
-];
-
 const AvailableMeals = () => {
-  const meals = DUMMY_MEALS.map((meal) => (
+  const [meals, setMeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isError, setIsError] = useState();
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      const odgovor = await fetch(
+        "https://hranaapp-8abbf-default-rtdb.firebaseio.com/meals.json"
+      );
+
+      if (!odgovor.ok) {
+        throw new Error("Nesto je poslo po zlu...");
+      }
+
+      const dobijeniObjekt = await odgovor.json();
+
+      const listaHraneSkup = [];
+
+      for (const key in dobijeniObjekt) {
+        listaHraneSkup.push({
+          id: key,
+          imeproizvoda: dobijeniObjekt[key].name,
+          opis: dobijeniObjekt[key].description,
+          price: dobijeniObjekt[key].price,
+        });
+      }
+
+      setMeals(listaHraneSkup);
+      setLoading(false);
+    };
+
+    fetchMovies().catch((error) => {
+      setLoading(false);
+      setIsError(error.message);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <section className={stilovi.loadinga}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className={stilovi.errora}>
+        <p>{isError}</p>
+      </section>
+    );
+  }
+
+  const mealsList = meals.map((meal) => (
     <MealItem
       id={meal.id}
       key={meal.id}
-      imeproizvoda={meal.name}
+      imeproizvoda={meal.imeproizvoda}
       price={meal.price}
-      opis={meal.description}
+      opis={meal.opis}
     />
   ));
 
   return (
     <section className={stilovi.meals}>
-      <Card>{meals}</Card>
+      <Card>{mealsList}</Card>
     </section>
   );
 };
