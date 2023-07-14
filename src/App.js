@@ -1,32 +1,40 @@
-
-
 import { useState } from "react";
-import Cart from "./Komponente/Cart/Cart";
-import Header from "./Komponente/Layout/Header";
-import Meals from "./Komponente/Meals/Meals";
-import KontekstProvider from "./store/KontekstProvider";
-
-
+import { Routes, Route } from "react-router-dom";
+// import Header from "./components/Layout/Header";
+// import Meals from "./components/Meals/Meals";
+import Cart from "./components/Cart/Cart";
+import CartProvider from "./store/CartProvider";
+import Home from "./components/Layout/Home";
+import NotFound from "./components/UI/Navigate";
 
 function App() {
+  const [cartIsShown, setCartIsShown] = useState(false);
 
-  const [prikazanaKorpa, setPrikazanaKorpa] = useState(false)
+  const showCartHandler = () => {
+    setCartIsShown(true);
+  };
 
-  const prikaziKorpuHandler = () => {
-    setPrikazanaKorpa(true)
-  }
-
-  const sakrijKorpuHandler = () => {
-    setPrikazanaKorpa(false)
-  }
-
+  const hideCartHandler = () => {
+    setCartIsShown(false);
+  };
 
   return (
-    <KontekstProvider>
-      {prikazanaKorpa && <Cart onSakrijKorpu={sakrijKorpuHandler} />}
-      <Header onPrikaziKorpu={prikaziKorpuHandler} />
-      <Meals />
-    </KontekstProvider>
+    <CartProvider>
+      <Routes>
+        <Route path="/" element={<Home showCartHandler={showCartHandler} />} />
+        {cartIsShown && (
+          <Route
+            path="/ShopCart"
+            element={<Cart onClose={hideCartHandler} />}
+          />
+        )}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {/* <Header onShowCart={showCartHandler} />
+      <main>
+        <Meals />
+      </main> */}
+    </CartProvider>
   );
 }
 
